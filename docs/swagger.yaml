@@ -1,0 +1,162 @@
+openapi: 3.0.0
+
+info:
+  title: PokeQuiz API
+  description: API do jogo de trivia Full-Stack com tema Pokémon, o PokéQuiz.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3001
+    description: Servidor de desenvolvimento local
+
+paths:
+  /api/question:
+    get:
+      summary: Retorna uma nova pergunta do jogo.
+      description: Gera uma pergunta aleatória e inclui o estado atual do jogo (vidas e pontuação).
+      responses:
+        '200':
+          description: Pergunta gerada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: "who-is-this-pokemon"
+                  questionText:
+                    type: string
+                    example: "Quem é este Pokémon?"
+                  image:
+                    type: string
+                    example: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+                  options:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "charmander"
+                        isCorrect:
+                          type: boolean
+                          example: false
+                  lives:
+                    type: integer
+                    example: 3
+                  score:
+                    type: integer
+                    example: 0
+        '400':
+          description: Fim de jogo.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Fim de jogo. Reinicie para jogar de novo."
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Erro interno do servidor."
+
+  /api/answer:
+    post:
+      summary: Envia a resposta do usuário para verificação.
+      description: Recebe a resposta e atualiza o estado do jogo (vidas e pontuação).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userGuess:
+                  type: string
+                  example: "bulbasaur"
+              required:
+                - userGuess
+      responses:
+        '200':
+          description: Resultado da verificação da resposta e estado do jogo.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isCorrect:
+                    type: boolean
+                    example: true
+                  lives:
+                    type: integer
+                    example: 3
+                  score:
+                    type: integer
+                    example: 1
+        '400':
+          description: Resposta inválida ou jogo encerrado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isCorrect:
+                    type: boolean
+                    example: false
+                  lives:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: "Resposta ou jogo inválido. Reinicie o jogo."
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Erro interno do servidor."
+
+  /api/reset:
+    post:
+      summary: Reinicia o jogo.
+      description: Zera as vidas e a pontuação do jogador.
+      responses:
+        '200':
+          description: Jogo reiniciado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Jogo reiniciado"
+                  lives:
+                    type: integer
+                    example: 3
+                  score:
+                    type: integer
+                    example: 0
+        '500':
+          description: Erro interno do servidor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Erro interno do servidor."
