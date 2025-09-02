@@ -3,6 +3,7 @@ const session = require('express-session');
 const pokemonService = require('./services/pokemonService');
 const gameService = require('./services/gameService');
 const { checkAnswer } = require('./services/answerChecker');
+const cors = require('cors'); // Importa o middleware CORS
 
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
@@ -10,16 +11,29 @@ const swaggerDocument = YAML.load('./docs/swagger.yaml');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const DEFAULT_LIVES = 3; // Define o número de vidas padrão
+const DEFAULT_LIVES = 3;
+
+// Configuração do CORS para permitir requisições do front-end
+app.use(
+    cors({
+        origin: 'http://localhost:3000', // A URL do seu front-end
+        credentials: true, // Necessário para enviar cookies e sessões
+    })
+);
 
 app.use(express.json());
 
+// Configuração da sessão
 app.use(
     session({
         secret: 'sua-chave-secreta-super-segura-e-aleatoria',
         resave: false,
         saveUninitialized: true,
-        cookie: { secure: process.env.NODE_ENV === 'production' },
+        cookie: {
+            secure: process.env.NODE_ENV === 'production',
+            httpOnly: true,
+            sameSite: 'lax', // Permite que cookies de sessão sejam enviados em ambientes de desenvolvimento
+        },
     })
 );
 
@@ -32,7 +46,7 @@ app.get('/', (req, res) => {
 // Nova rota para reiniciar o jogo
 app.post('/api/reset', (req, res) => {
     req.session.lives = DEFAULT_LIVES;
-    req.session.score = 0; // Também vamos adicionar uma pontuação
+    req.session.score = 0;
     req.session.correctAnswer = undefined;
     res.json({ message: 'Jogo reiniciado', lives: req.session.lives, score: req.session.score });
 });
@@ -40,13 +54,11 @@ app.post('/api/reset', (req, res) => {
 // Rota para gerar uma pergunta
 app.get('/api/question', async (req, res) => {
     try {
-        // Se for a primeira vez, inicializa as vidas e a pontuação
         if (req.session.lives === undefined) {
             req.session.lives = DEFAULT_LIVES;
             req.session.score = 0;
         }
 
-        // Se o jogo acabou, informa ao front-end
         if (req.session.lives <= 0) {
             return res.status(400).json({ error: 'Fim de jogo. Reinicie para jogar de novo.' });
         }
@@ -57,7 +69,6 @@ app.get('/api/question', async (req, res) => {
 
         console.log(`Nova pergunta gerada! Tipo: ${question.type}. Resposta correta (Modo Dev): ${req.session.correctAnswer}`);
 
-        // Inclui o estado do jogo na resposta
         res.json({ ...question, lives: req.session.lives, score: req.session.score });
     } catch (error) {
         console.error('❌ Erro ao gerar a pergunta:', error);
@@ -86,7 +97,6 @@ app.post('/api/answer', (req, res) => {
             req.session.lives -= 1;
             res.json({ isCorrect: false, lives: req.session.lives, score: req.session.score });
         }
-
     } catch (error) {
         console.error('❌ Erro ao verificar a resposta:', error);
         res.status(500).json({ error: 'Erro ao verificar a resposta.' });
