@@ -2,7 +2,8 @@ const axios = require('axios');
 
 let pokemonCache = [];
 
-const POKEAPI_BASE_URL = 'https://pokeapi.co/api/v2/pokemon?limit=151';
+// AQUI ESTÁ O ERRO! Vamos mudar o limite para 386
+const POKEAPI_BASE_URL = 'https://pokeapi.co/api/v2/pokemon?limit=386';
 
 /**
  * Busca e carrega os dados de espécie e geração de um Pokémon.
@@ -29,26 +30,22 @@ const getEvolutionChainData = async (evolutionChainUrl) => {
 };
 
 /**
- * Busca e carrega os dados de todos os Pokémon da primeira geração,
+ * Busca e carrega os dados de todos os Pokémon,
  * incluindo tipos, geração e cadeia de evolução.
  */
 const loadAllPokemon = async () => {
   try {
     console.log('✨ Carregando dados dos Pokémon da PokéAPI...');
 
-    // Pega a lista inicial dos 151 Pokémon
     const response = await axios.get(POKEAPI_BASE_URL);
     const results = response.data.results;
 
-    // Para cada Pokémon, fazemos requisições adicionais para mais detalhes
     const detailedPokemonPromises = results.map(async (pokemon) => {
       const detailsResponse = await axios.get(pokemon.url);
       const detailsData = detailsResponse.data;
 
-      // 1. Pega os dados de espécie (geração e URL de evolução)
       const speciesData = await getPokemonSpeciesData(detailsData.species.url);
 
-      // 2. Monta o objeto final do Pokémon
       return {
         id: detailsData.id,
         name: detailsData.name,
@@ -59,7 +56,6 @@ const loadAllPokemon = async () => {
       };
     });
 
-    // Espera todas as requisições secundárias terminarem
     pokemonCache = await Promise.all(detailedPokemonPromises);
 
     console.log(`✅ Dados de ${pokemonCache.length} Pokémon carregados com sucesso!`);
@@ -76,7 +72,6 @@ const getAllPokemon = () => {
   return pokemonCache;
 };
 
-// Exporta as novas funções auxiliares para testes
 module.exports = {
   loadAllPokemon,
   getAllPokemon,

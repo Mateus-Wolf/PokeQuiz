@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { AchievementProvider } from './contexts/AchievementContext';
 import Menu from './components/Menu';
 import Game from './components/Game';
+import Footer from './components/Footer';
+import AchievementToast from './components/AchievementToast'; // Importa a notificação
 
-// Este componente App.js vai ser o gerenciador de telas.
+const screenVariants = {
+    hidden: { opacity: 0, x: 200 },
+    visible: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -200, transition: { duration: 0.3 } },
+};
+
 const App = () => {
-    // Usamos o useState para controlar qual tela está visível.
     const [screen, setScreen] = useState('menu');
+    const [gameMode, setGameMode] = useState(null);
 
-    const handleStartGame = () => {
+    const handleStartGame = (mode) => {
+        setGameMode(mode);
         setScreen('game');
     };
 
@@ -15,12 +26,39 @@ const App = () => {
         setScreen('menu');
     };
 
-    // A gente renderiza o componente da tela atual
     return (
-        <div className="app-container">
-            {screen === 'menu' && <Menu onStartGame={handleStartGame} />}
-            {screen === 'game' && <Game onBackToMenu={handleBackToMenu} />}
-        </div>
+        <ThemeProvider>
+            <AchievementProvider>
+                <div className="app-container">
+                    <AnimatePresence mode="wait">
+                        {screen === 'menu' && (
+                            <motion.div
+                                key="menu-screen"
+                                variants={screenVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="exit"
+                            >
+                                <Menu onStartGame={handleStartGame} />
+                            </motion.div>
+                        )}
+                        {screen === 'game' && (
+                            <motion.div
+                                key="game-screen"
+                                variants={screenVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="exit"
+                            >
+                                <Game onBackToMenu={handleBackToMenu} mode={gameMode} />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+                <Footer />
+                <AchievementToast />
+            </AchievementProvider>
+        </ThemeProvider>
     );
 };
 

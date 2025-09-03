@@ -1,0 +1,104 @@
+.main-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 20px;
+    text-align: center;
+    background-color: var(--container-background);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: background-color 0.5s;
+}
+
+.theme-toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: transparent;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.theme-toggle-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-button svg {
+    font-size: 1.2rem;
+}
+
+body[data-theme='dark'] .theme-toggle-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ... (estilos existentes) ... */
+
+.achievements-button {
+    background-color: #ffd700;
+    color: #444;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.achievements-button:hover {
+    background-color: #ffc107;
+}
+
+body[data-theme='dark'] .achievements-button {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.achievements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+}
+
+.achievement-item.unlocked {
+    background-color: #e8f5e9;
+    border-color: #4CAF50;
+}
+
+.achievement-icon {
+    font-size: 2rem;
+    color: #ccc;
+}
+
+.achievement-item.unlocked .achievement-icon {
+    color: #ffd700;
+}
+
+.unlocked-status {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    margin-left: auto;
+}

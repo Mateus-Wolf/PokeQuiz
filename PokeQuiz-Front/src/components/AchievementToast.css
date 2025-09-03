@@ -1,0 +1,29 @@
+.achievement-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 30px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+}
+
+.toast-icon {
+    font-size: 2rem;
+}
+
+.toast-content h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.toast-content p {
+    margin: 0;
+    font-size: 1rem;
+}
